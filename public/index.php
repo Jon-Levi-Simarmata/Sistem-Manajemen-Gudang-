@@ -1,8 +1,19 @@
 <?php
 session_start();
+require_once __DIR__ . '/../controllers/BarangKeluarController.php';
 
 // Ambil path URL
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+$basePath = '/Sistem-Manajemen-Gudang-/public';
+
+if (strpos($uri, $basePath) === 0) {
+    $uri = substr($uri, strlen($basePath));
+}
+
+if ($uri === '' || $uri === '/index.php') {
+    $uri = '/';
+}
 
 // Tentukan judul & halaman yang dipanggil berdasarkan URL
 switch ($uri) {
@@ -32,6 +43,34 @@ switch ($uri) {
         require __DIR__ . '/../views/pages/transaksi/scan.php';
         $content = ob_get_clean();
         break;
+
+    case '/transaksi/barang-keluar':
+        $title = "Daftar Barang Keluar";
+
+        $controller = new BarangKeluarController();
+        $transaksi = $controller->index();
+
+        ob_start();
+        require __DIR__ . '/../views/pages/transaksi/barang_keluar.php';
+        $content = ob_get_clean();
+        break;
+        
+    case '/transaksi/store':
+        $controller = new BarangKeluarController();
+        echo $controller->store();
+        exit;
+    
+    
+    case '/transaksi/update':
+        $controller = new BarangKeluarController();
+        echo $controller->update((int) ($_POST['id'] ?? 0));
+        exit;
+
+    case '/transaksi/delete':
+        $controller = new BarangKeluarController();
+        echo $controller->delete((int) ($_POST['id'] ?? 0));
+        exit;
+
 
     default:
         http_response_code(404);
